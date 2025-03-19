@@ -60,12 +60,14 @@ def get_plasmids(search_query=None):
         cursor = conn.cursor()
 
         query = """
-            SELECT * FROM plasmids 
+            SELECT id, name, backbone, insert, selection_marker, ori, sequence, 
+                   stock_concentration, preparation_date, map_link 
+            FROM plasmids 
             WHERE %s IS NULL 
-            OR id ILIKE %s 
-            OR name ILIKE %s 
-            OR insert ILIKE %s 
-            OR similarity(sequence, %s) > 0.1  -- Use pg_trgm similarity search
+               OR id ILIKE %s 
+               OR name ILIKE %s 
+               OR insert ILIKE %s 
+               OR similarity(sequence, %s) > 0.3  -- Use pg_trgm similarity search
             ORDER BY 
                 LEFT(id, 1) ASC,  
                 CAST(REGEXP_REPLACE(id, '[A-Za-z]', '', 'g') AS INTEGER) ASC;
@@ -74,17 +76,17 @@ def get_plasmids(search_query=None):
 
         plasmids = cursor.fetchall()
 
-        # 🔍 Debugging: Print sorted plasmid IDs
         print("✅ Sorted Plasmids:", [p[0] for p in plasmids])
 
         cursor.close()
         conn.close()
-        
+
         return plasmids
 
     except Exception as e:
         print("❌ Database Error:", str(e))
         return []
+
     
 # 🎨 Highlight Features in Sequence
 def highlight_snapgene_features(sequence, features):
@@ -104,28 +106,10 @@ def highlight_snapgene_features(sequence, features):
 
     # ✅ Ensure span tags do NOT interfere with line breaks
     raw_highlighted = "".join(highlighted_sequence)
-    formatted_sequence, temp_line, line_length = [], "", 0
+    formatted_sequence = "<br>".join([raw_highlighted[i:i+100] for i in range(0, len(raw_highlighted), 100)])
 
-    formatted_sequence.append("<br>")  # ✅ Force a line break before sequence starts
+    return formatted_sequence
 
-    inside_span = False  # Track if inside a span
-    for i, char in enumerate(raw_highlighted):
-        if char == "<":
-            inside_span = True
-        if char == ">":
-            inside_span = False
-
-        temp_line += char
-        if not inside_span and char not in "<>" and line_length >= 100:
-            formatted_sequence.append(temp_line)
-            temp_line, line_length = "", 0
-        elif not inside_span:
-            line_length += 1
-
-    if temp_line:
-        formatted_sequence.append(temp_line)
-
-    return "<br>".join(formatted_sequence)
 
 # 🏠 Homepage - View All Plasmids & Search Functionality
 @app.route("/", methods=["GET"])
