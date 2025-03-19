@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plasmid Database</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+    <h1>Plasmid Database</h1>
+
+    <!-- 🔍 Search Form -->
+    <form method="GET" action="{{ url_for('index') }}">
+        <input type="text" name="search" placeholder="Search by ID, Name, Insert, or Sequence..." value="{{ request.args.get('search', '') }}">
+        <button type="submit">Search</button>
+    </form>
+
+    <br>
+
+    <!-- 📋 Plasmid Table -->
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Backbone</th>
+                <th>Insert</th>
+                <th>Selection Marker</th>
+                <th>Ori</th>
+                <th>Stock Concentration</th>
+                <th>Preparation Date</th>
+                <th>Sequence</th>
+                <th>Map</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for plasmid in plasmids %}
+            <tr>
+                <td><a href="{{ url_for('plasmid_detail', plasmid_id=plasmid[0]) }}">{{ plasmid[0] }}</a></td>
+                <td>{{ plasmid[1] }}</td>
+                <td>{{ plasmid[2] }}</td>
+                <td>{{ plasmid[3] }}</td>
+                <td>{{ plasmid[4] }}</td>
+                <td>{{ plasmid[5] }}</td>
+                <td>{{ plasmid[10] if plasmid[10] else "N/A" }} ng/µL</td>
+                <td>{{ plasmid[9] if plasmid[9] else "N/A" }}</td>
+                <td>
+                    {% if plasmid[6] %}
+                        {{ plasmid[6][:50] }}...
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+                <td>
+                    {% if plasmid[7] %}
+                        <a href="{{ plasmid[7] }}" target="_blank">🗺️ View</a>
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

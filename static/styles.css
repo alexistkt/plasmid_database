@@ -1,0 +1,35 @@
+.snap-feature {
+    font-weight: bold;
+    padding: 2px;
+    border-radius: 3px;
+}
+
+.snap-feature.cds {
+    background-color: #ffcccc;
+    color: black;
+}
+
+.snap-feature.enhancer {
+    background-color: #ffcc99;
+    color: black;
+}
+
+.snap-feature.promoter {
+    background-color: #ffff99;
+    color: black;
+}
+
+.snap-feature.protein_bind {
+    background-color: #ccffcc;
+    color: black;
+}
+
+.snap-feature.rep_origin {
+    background-color: #99ccff;
+    color: black;
+}
+
+.snap-feature.primer_bind {
+    background-color: #cc99ff;
+    color: black;
+}
